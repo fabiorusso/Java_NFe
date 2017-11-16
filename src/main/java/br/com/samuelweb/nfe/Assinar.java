@@ -65,13 +65,13 @@ public class Assinar {
 	 * @return String do Xml Assinado
 	 * @throws NfeException
 	 */
-	public static String assinaNfe(String stringXml ,String tipo) throws NfeException{
+	public static String assinaNfe(String stringXml ,String tipo, String cnpj) throws NfeException{
 		
-		configuracoesNfe = ConfiguracoesIniciaisNfe.getInstance();
+		configuracoesNfe = ConfiguracoesIniciaisNfe.getInstance(cnpj);
 
 		stringXml = XmlUtil.removeAcentos(stringXml);
 		stringXml = assinaDocNFe(stringXml , tipo);
-
+		
 		return stringXml;
 	}
 

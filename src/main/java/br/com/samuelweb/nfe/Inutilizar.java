@@ -35,10 +35,10 @@ public class Inutilizar {
 	private static ConfiguracoesIniciaisNfe configuracoesNfe;
 	private static CertificadoUtil certUtil;
 
-	public static TRetInutNFe inutiliza(TInutNFe inutNFe, boolean valida, String tipo) throws NfeException {
+	public static TRetInutNFe inutiliza(TInutNFe inutNFe, boolean valida, String tipo, String cnpj) throws NfeException {
 
-		certUtil = new CertificadoUtil();
-		configuracoesNfe = ConfiguracoesIniciaisNfe.getInstance();
+		certUtil = new CertificadoUtil(cnpj);
+		configuracoesNfe = ConfiguracoesIniciaisNfe.getInstance(cnpj);
 		boolean nfce = tipo.equals(ConstantesUtil.NFCE);
 		boolean BA = configuracoesNfe.getEstado().equals(Estados.BA);
 
@@ -49,10 +49,10 @@ public class Inutilizar {
 			String xml = XmlUtil.objectToXml(inutNFe);
 			xml = xml.replaceAll(" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\"", "");
 
-			xml = Assinar.assinaNfe(xml, Assinar.INFINUT);
+			xml = Assinar.assinaNfe(xml, Assinar.INFINUT, cnpj);
 
 			if (valida) {
-				String erros = Validar.validaXml(xml, Validar.INUTILIZACAO);
+				String erros = Validar.validaXml(xml, Validar.INUTILIZACAO,cnpj);
 				if (!ObjetoUtil.isEmpty(erros)) {
 					throw new NfeValidacaoException("Erro Na Validação do Xml: " + erros);
 				}
@@ -73,8 +73,8 @@ public class Inutilizar {
 				nfeCabecMsgEBA.setNfeCabecMsg(nfeCabecMsgBA);
 
 				NfeInutilizacaoStub stub = new NfeInutilizacaoStub(
-						nfce ? WebServiceUtil.getUrl(ConstantesUtil.NFCE, ConstantesUtil.SERVICOS.INUTILIZACAO)
-								: WebServiceUtil.getUrl(ConstantesUtil.NFE, ConstantesUtil.SERVICOS.INUTILIZACAO));
+						nfce ? WebServiceUtil.getUrl(ConstantesUtil.NFCE, ConstantesUtil.SERVICOS.INUTILIZACAO, cnpj)
+								: WebServiceUtil.getUrl(ConstantesUtil.NFE, ConstantesUtil.SERVICOS.INUTILIZACAO,cnpj));
 				resultBA = stub.nfeInutilizacaoNF(dadosMsgBA, nfeCabecMsgEBA);
 
 				return XmlUtil.xmlToObject(resultBA.getExtraElement().toString(), TRetInutNFe.class);
@@ -90,8 +90,8 @@ public class Inutilizar {
 				nfeCabecMsgE.setNfeCabecMsg(nfeCabecMsg);
 
 				NfeInutilizacao2Stub stub = new NfeInutilizacao2Stub(
-						nfce ? WebServiceUtil.getUrl(ConstantesUtil.NFCE, ConstantesUtil.SERVICOS.INUTILIZACAO)
-								: WebServiceUtil.getUrl(ConstantesUtil.NFE, ConstantesUtil.SERVICOS.INUTILIZACAO));
+						nfce ? WebServiceUtil.getUrl(ConstantesUtil.NFCE, ConstantesUtil.SERVICOS.INUTILIZACAO,cnpj)
+								: WebServiceUtil.getUrl(ConstantesUtil.NFE, ConstantesUtil.SERVICOS.INUTILIZACAO,cnpj));
 				result = stub.nfeInutilizacaoNF2(dadosMsg, nfeCabecMsgE);
 
 				return XmlUtil.xmlToObject(result.getExtraElement().toString(), TRetInutNFe.class);

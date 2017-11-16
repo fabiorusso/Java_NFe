@@ -40,11 +40,11 @@ public class Validar implements ErrorHandler {
 		 this.listaComErrosDeValidacao = "";  
 	}
 
-	public static String validaXml(String xml, String tipo) throws NfeException {
+	public static String validaXml(String xml, String tipo, String cnpj) throws NfeException {
 
 		String errosValidacao = null;
 
-		configuracoesNfe = ConfiguracoesIniciaisNfe.getInstance();
+		configuracoesNfe = ConfiguracoesIniciaisNfe.getInstance(cnpj);
 		
 		switch (tipo) {
 		case STATUS:

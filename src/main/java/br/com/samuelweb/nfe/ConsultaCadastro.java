@@ -41,9 +41,9 @@ public class ConsultaCadastro {
 	 * @throws NfeException
 	 */
 	
-	public static TRetConsCad consultaCadastro(TConsCad consCad, boolean valida) throws NfeException {
+	public static TRetConsCad consultaCadastro(TConsCad consCad, boolean valida, String cnpj) throws NfeException {
 
-		certUtil = new CertificadoUtil();
+		certUtil = new CertificadoUtil(cnpj);
 
 		try {
 
@@ -52,7 +52,7 @@ public class ConsultaCadastro {
 			String xml = XmlUtil.objectToXml(consCad);
 
 			if (valida) {
-				String erros = Validar.validaXml(xml, Validar.CONSULTA_CADASTRO);
+				String erros = Validar.validaXml(xml, Validar.CONSULTA_CADASTRO,cnpj);
 				if (!ObjetoUtil.isEmpty(erros)) {
 					throw new NfeValidacaoException("Erro Na Validação do Xml: " + erros);
 				}
@@ -71,7 +71,7 @@ public class ConsultaCadastro {
 			CadConsultaCadastro2Stub.NfeCabecMsgE nfeCabecMsgE = new CadConsultaCadastro2Stub.NfeCabecMsgE();
 			nfeCabecMsgE.setNfeCabecMsg(nfeCabecMsg);
 
-			CadConsultaCadastro2Stub stub = new CadConsultaCadastro2Stub(WebServiceUtil.getUrlConsultaCadastro(consCad.getInfCons().getUF().toString()));
+			CadConsultaCadastro2Stub stub = new CadConsultaCadastro2Stub(WebServiceUtil.getUrlConsultaCadastro(consCad.getInfCons().getUF().toString(), cnpj));
 			result = stub.cadConsultaCadastro2(dadosMsg, nfeCabecMsgE);
 			
 			return XmlUtil.xmlToObject(result.getExtraElement().toString(), TRetConsCad.class);

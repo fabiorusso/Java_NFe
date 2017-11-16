@@ -17,11 +17,11 @@ import br.com.samuelweb.nfe.exception.NfeException;
  */
 public class WebServiceUtil {
 
-	public static String getUrl(String tipo, String servico) throws NfeException {
+	public static String getUrl(String tipo, String servico, String cnpj) throws NfeException {
 
 		try {
 
-			ConfiguracoesIniciaisNfe config = ConfiguracoesIniciaisNfe.getInstance();
+			ConfiguracoesIniciaisNfe config = ConfiguracoesIniciaisNfe.getInstance(cnpj);
 			String secao = tipo + "_" + config.getEstado() + "_"
 					+ (config.getAmbiente().equals(ConstantesUtil.AMBIENTE.HOMOLOGACAO) ? "H" : "P");
 
@@ -74,13 +74,13 @@ public class WebServiceUtil {
 		}
 
 	}
-	public static String getUrlConsultaCadastro(String uf) throws NfeException {
+	public static String getUrlConsultaCadastro(String uf, String cnpj) throws NfeException {
 		
 			String tipo = ConstantesUtil.NFE;
 			String servico = ConstantesUtil.SERVICOS.CONSULTA_CADASTRO;
 		try {
 			
-			ConfiguracoesIniciaisNfe config = ConfiguracoesIniciaisNfe.getInstance();
+			ConfiguracoesIniciaisNfe config = ConfiguracoesIniciaisNfe.getInstance(cnpj);
 			String secao = tipo + "_" + uf.toUpperCase() + "_"
 					+ (config.getAmbiente().equals(ConstantesUtil.AMBIENTE.HOMOLOGACAO) ? "H" : "P");
 			

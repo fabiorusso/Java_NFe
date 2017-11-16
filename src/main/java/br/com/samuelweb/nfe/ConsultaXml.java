@@ -44,10 +44,10 @@ public class ConsultaXml {
 	 * @return
 	 * @throws NfeException
 	 */
-	public static TRetConsSitNFe consultaXml(TConsSitNFe consSitNFe, boolean valida, String tipo) throws NfeException {
+	public static TRetConsSitNFe consultaXml(TConsSitNFe consSitNFe, boolean valida, String tipo, String cnpj) throws NfeException {
 		
-		certUtil = new CertificadoUtil();
-		configuracoesNfe = ConfiguracoesIniciaisNfe.getInstance();
+		certUtil = new CertificadoUtil(cnpj);
+		configuracoesNfe = ConfiguracoesIniciaisNfe.getInstance(cnpj);
 		boolean nfce = tipo.equals(ConstantesUtil.NFCE);
 		boolean BA = configuracoesNfe.getEstado().equals(Estados.BA);
 
@@ -58,7 +58,7 @@ public class ConsultaXml {
 			String xml = XmlUtil.objectToXml(consSitNFe);
 			
 			if(valida){
-				String erros = Validar.validaXml(xml, Validar.CONSULTA_XML);
+				String erros = Validar.validaXml(xml, Validar.CONSULTA_XML,cnpj);
 				if(!ObjetoUtil.isEmpty(erros)){
 					throw new NfeValidacaoException("Erro Na Validação do Xml: "+erros);
 				}
@@ -78,7 +78,7 @@ public class ConsultaXml {
 				NfeConsultaStub.NfeCabecMsgE nfeCabecMsgEBA = new NfeConsultaStub.NfeCabecMsgE();
 				nfeCabecMsgEBA.setNfeCabecMsg(nfeCabecMsgBA);
 				
-				NfeConsultaStub stubBA = new NfeConsultaStub(nfce ? WebServiceUtil.getUrl(ConstantesUtil.NFCE, ConstantesUtil.SERVICOS.CONSULTA_XML) : WebServiceUtil.getUrl(ConstantesUtil.NFE, ConstantesUtil.SERVICOS.CONSULTA_XML));
+				NfeConsultaStub stubBA = new NfeConsultaStub(nfce ? WebServiceUtil.getUrl(ConstantesUtil.NFCE, ConstantesUtil.SERVICOS.CONSULTA_XML,cnpj) : WebServiceUtil.getUrl(ConstantesUtil.NFE, ConstantesUtil.SERVICOS.CONSULTA_XML, cnpj));
 				resultBA = stubBA.nfeConsultaNF(dadosMsgBA, nfeCabecMsgEBA);
 				
 				return XmlUtil.xmlToObject(resultBA.getExtraElement().toString(), TRetConsSitNFe.class);
@@ -93,7 +93,7 @@ public class ConsultaXml {
 				NfeConsulta2Stub.NfeCabecMsgE nfeCabecMsgE = new NfeConsulta2Stub.NfeCabecMsgE();
 				nfeCabecMsgE.setNfeCabecMsg(nfeCabecMsg);
 				
-				NfeConsulta2Stub stub = new NfeConsulta2Stub(nfce ? WebServiceUtil.getUrl(ConstantesUtil.NFCE, ConstantesUtil.SERVICOS.CONSULTA_XML) : WebServiceUtil.getUrl(ConstantesUtil.NFE, ConstantesUtil.SERVICOS.CONSULTA_XML));
+				NfeConsulta2Stub stub = new NfeConsulta2Stub(nfce ? WebServiceUtil.getUrl(ConstantesUtil.NFCE, ConstantesUtil.SERVICOS.CONSULTA_XML,cnpj) : WebServiceUtil.getUrl(ConstantesUtil.NFE, ConstantesUtil.SERVICOS.CONSULTA_XML,cnpj));
 				result = stub.nfeConsultaNF2(dadosMsg, nfeCabecMsgE);
 				
 				return XmlUtil.xmlToObject(result.getExtraElement().toString(), TRetConsSitNFe.class);

@@ -3,6 +3,11 @@
  */
 package br.com.samuelweb.nfe;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 import br.com.samuelweb.certificado.Certificado;
 import br.com.samuelweb.nfe.exception.NfeException;
 import br.com.samuelweb.nfe.util.Estados;
@@ -11,52 +16,79 @@ import br.com.samuelweb.nfe.util.ProxyUtil;
 /**
  * @author Samuel Oliveira
  *
- * Inicia Configurações Nfe. 
+ *         Inicia Configurações Nfe.
  */
 public final class ConfiguracoesIniciaisNfe {
-	
-	private static ConfiguracoesIniciaisNfe instance;
-	
+
+	private static Map<String, ConfiguracoesIniciaisNfe> instance = new HashMap<String, ConfiguracoesIniciaisNfe>();
+
 	private Estados estado;
 	private String ambiente;
 	private Certificado certificado;
 	private String pastaSchemas;
 	private String versaoNfe;
-	private ProxyUtil proxyUtil; 
+	private ProxyUtil proxyUtil;
+	private String cnpj;
 	private boolean contigenciaSCAN;
-	
-	//Construtor Singleton
-	private ConfiguracoesIniciaisNfe(){}
-	
-	//Construtor Privado
-	private ConfiguracoesIniciaisNfe(Estados estado,String ambiente, Certificado certificado, String pastaSchemas, String versaoNfe){
-		
-		instance = new ConfiguracoesIniciaisNfe();
-		instance.setEstado(estado);
-		instance.setAmbiente(ambiente);
-		instance.setCertificado(certificado);
-		instance.setPastaSchemas(pastaSchemas);
-		instance.setVersaoNfe(versaoNfe);
-		
+
+	// Construtor Singleton
+	private ConfiguracoesIniciaisNfe() {
 	}
-	
-	public static ConfiguracoesIniciaisNfe iniciaConfiguracoes(Estados estado,String ambiente, Certificado certificado, String pastaSchemas, String versaoNfe){
-		new ConfiguracoesIniciaisNfe(estado,ambiente,certificado,pastaSchemas,versaoNfe);
+
+	// Construtor Privado
+	private ConfiguracoesIniciaisNfe(Estados estado, String ambiente, Certificado certificado, String pastaSchemas,
+			String versaoNfe) {
+		this.setEstado(estado);
+		this.setAmbiente(ambiente);
+		this.setCertificado(certificado);
+		this.setPastaSchemas(pastaSchemas);
+		this.setVersaoNfe(versaoNfe);
+		this.setCnpj(cnpj);
+	}
+
+	private void readFileConfiguration() {
+		Properties prop = new Properties();
+		try {
+			prop.load(getClass().getResourceAsStream("/certificados.properties"));
+			String filename = prop.getProperty("file.path");
+			System.out.println("file: " + filename);
+
+		} catch (IOException e) {
+
+		}
+	}
+
+	private ConfiguracoesIniciaisNfe(Estados estado, String ambiente, String pastaSchemas, String versaoNfe,
+			String cnpj) {
+		this.setEstado(estado);
+		this.setAmbiente(ambiente);
+		this.setCnpj(cnpj);
+		this.setPastaSchemas(pastaSchemas);
+		this.setVersaoNfe(versaoNfe);
+
+	}
+
+	public static ConfiguracoesIniciaisNfe iniciaConfiguracoes(Estados estado, String ambiente, Certificado certificado,
+			String pastaSchemas, String versaoNfe, String cnpj) {
+
+		instance.put(cnpj, new ConfiguracoesIniciaisNfe(estado, ambiente, certificado, pastaSchemas, versaoNfe));
 		System.out.println("Api Java Nfe Versão 3.10.8 - Samuel Olivera - samuk.exe@hotmail.com");
-		System.out.println("Certificado: "+certificado.getTipo().toUpperCase()+" - "+ certificado.getNome().toUpperCase() +" - Vencimento: " + certificado.getVencimento());
-		System.out.println("Ambiente: "+ (ambiente.equals("1") ? "Produção" : "Homologação") + " - Estado: "+estado.getNome() + " - Versão: "+versaoNfe);
-		return instance;
+		System.out.println("Certificado: " + certificado.getTipo().toUpperCase() + " - "
+				+ certificado.getNome().toUpperCase() + " - Vencimento: " + certificado.getVencimento());
+		System.out.println("Ambiente: " + (ambiente.equals("1") ? "Produção" : "Homologação") + " - Estado: "
+				+ estado.getNome() + " - Versão: " + versaoNfe);
+		return instance.get(cnpj);
 	}
-	
-	public static ConfiguracoesIniciaisNfe getInstance() throws NfeException{
-		if(instance == null){
+
+	public static ConfiguracoesIniciaisNfe getInstance(String cnpj) throws NfeException {
+		if (instance == null) {
 			throw new NfeException("Configurações Não Foram Inicializadas.");
 		}
-		
-		return instance;
+
+		return instance.get(cnpj);
 	}
-	
-	public void setProxy(String ip, int porta, String usuario,String senha){
+
+	public void setProxy(String ip, int porta, String usuario, String senha) {
 		proxyUtil = new ProxyUtil(ip, porta, usuario, senha);
 	}
 
@@ -68,7 +100,8 @@ public final class ConfiguracoesIniciaisNfe {
 	}
 
 	/**
-	 * @param pastaSchemas the pastaSchemas to set
+	 * @param pastaSchemas
+	 *            the pastaSchemas to set
 	 */
 	public void setPastaSchemas(String pastaSchemas) {
 		this.pastaSchemas = pastaSchemas;
@@ -82,7 +115,8 @@ public final class ConfiguracoesIniciaisNfe {
 	}
 
 	/**
-	 * @param versaoNfe the versaoNfe to set
+	 * @param versaoNfe
+	 *            the versaoNfe to set
 	 */
 	public void setVersaoNfe(String versaoNfe) {
 		this.versaoNfe = versaoNfe;
@@ -96,7 +130,8 @@ public final class ConfiguracoesIniciaisNfe {
 	}
 
 	/**
-	 * @param ambiente the ambiente to set
+	 * @param ambiente
+	 *            the ambiente to set
 	 */
 	public void setAmbiente(String ambiente) {
 		this.ambiente = ambiente;
@@ -110,11 +145,13 @@ public final class ConfiguracoesIniciaisNfe {
 	}
 
 	/**
-	 * @param certificado the certificado to set
+	 * @param certificado
+	 *            the certificado to set
 	 */
 	public void setCertificado(Certificado certificado) {
 		this.certificado = certificado;
 	}
+
 	/**
 	 * 
 	 * @return configuracao do proxy
@@ -131,7 +168,8 @@ public final class ConfiguracoesIniciaisNfe {
 	}
 
 	/**
-	 * @param contigenciaSCAN the contigencia to set
+	 * @param contigenciaSCAN
+	 *            the contigencia to set
 	 */
 	public void setContigenciaSCAN(boolean contigenciaSCAN) {
 		this.contigenciaSCAN = contigenciaSCAN;
@@ -145,10 +183,19 @@ public final class ConfiguracoesIniciaisNfe {
 	}
 
 	/**
-	 * @param estado the estado to set
+	 * @param estado
+	 *            the estado to set
 	 */
 	public void setEstado(Estados estado) {
 		this.estado = estado;
+	}
+
+	public String getCnpj() {
+		return cnpj;
+	}
+
+	public void setCnpj(String cnpj) {
+		this.cnpj = cnpj;
 	}
 
 }

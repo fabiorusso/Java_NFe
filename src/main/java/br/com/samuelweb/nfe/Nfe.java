@@ -26,7 +26,7 @@ import br.inf.portalfiscal.nfe.schema.retinutnfe.TRetInutNFe;
  *
  */
 public class Nfe {
-	
+
 	/**
 	 * Construtor privado
 	 */
@@ -34,8 +34,8 @@ public class Nfe {
 	}
 
 	/**
-	 * Metodo Responsavel Buscar o Status de Serviço do Servidor da Sefaz
-	 * No tipo Informar ConstantesUtil.NFE ou ConstantesUtil.NFCE
+	 * Metodo Responsavel Buscar o Status de Serviço do Servidor da Sefaz No
+	 * tipo Informar ConstantesUtil.NFE ou ConstantesUtil.NFCE
 	 * 
 	 * @param consStatServ
 	 * @param valida
@@ -43,42 +43,44 @@ public class Nfe {
 	 * @return
 	 * @throws NfeException
 	 */
-	public static TRetConsStatServ statusServico(TConsStatServ consStatServ, boolean valida , String tipo) throws NfeException{
-		
-		return Status.statusServico(consStatServ , valida, tipo);
-		
+	public static TRetConsStatServ statusServico(TConsStatServ consStatServ, boolean valida, String tipo, String cnpj)
+			throws NfeException {
+
+		return Status.statusServico(consStatServ, valida, tipo,cnpj);
+
 	}
-	
+
 	/**
-	 * Classe Reponsavel Por Consultar o status da NFE na SEFAZ
-	 * No tipo Informar ConstantesUtil.NFE ou ConstantesUtil.NFCE
+	 * Classe Reponsavel Por Consultar o status da NFE na SEFAZ No tipo Informar
+	 * ConstantesUtil.NFE ou ConstantesUtil.NFCE
 	 * 
 	 * @param consSitNFe
 	 * @return TRetConsSitNFe
-	 * @throws NfeException 
+	 * @throws NfeException
 	 */
-	public static TRetConsSitNFe consultaXml(TConsSitNFe consSitNFe, boolean valida, String tipo) throws NfeException{
-		
-		return ConsultaXml.consultaXml(consSitNFe , valida, tipo);
-			
+	public static TRetConsSitNFe consultaXml(TConsSitNFe consSitNFe, boolean valida, String tipo, String cnpj)
+			throws NfeException {
+
+		return ConsultaXml.consultaXml(consSitNFe, valida, tipo, cnpj);
+
 	}
-	
+
 	/**
 	 * Classe Reponsavel Por Consultar o cadastro do Cnpj na SEFAZ
 	 * 
 	 * @param consCad
 	 * @return TRetConsCad
-	 * @throws NfeException 
+	 * @throws NfeException
 	 */
-	public static TRetConsCad consultaCadastro(TConsCad consCad, boolean valida) throws NfeException{
-		
-		return ConsultaCadastro.consultaCadastro(consCad, valida);
-		
+	public static TRetConsCad consultaCadastro(TConsCad consCad, boolean valida, String cnpj) throws NfeException {
+
+		return ConsultaCadastro.consultaCadastro(consCad, valida, cnpj);
+
 	}
-	
+
 	/**
-	 * Classe Reponsavel Por Consultar o retorno da NFE na SEFAZ
-	 * No tipo Informar ConstantesUtil.NFE ou ConstantesUtil.NFCE
+	 * Classe Reponsavel Por Consultar o retorno da NFE na SEFAZ No tipo
+	 * Informar ConstantesUtil.NFE ou ConstantesUtil.NFCE
 	 * 
 	 * @param consReciNFe
 	 * @param valida
@@ -86,15 +88,16 @@ public class Nfe {
 	 * @return
 	 * @throws NfeException
 	 */
-	public static TRetConsReciNFe consultaXml(TConsReciNFe consReciNFe, boolean valida, String tipo) throws NfeException{
-		
-		return ConsultaRecibo.reciboNfe(consReciNFe , valida, tipo);
-		
+	public static TRetConsReciNFe consultaXml(TConsReciNFe consReciNFe, boolean valida, String tipo, String cnpj)
+			throws NfeException {
+
+		return ConsultaRecibo.reciboNfe(consReciNFe, valida, tipo, cnpj);
+
 	}
-	
+
 	/**
-	 * Classe Reponsavel Por Inutilizar a NFE na SEFAZ
-	 * No tipo Informar ConstantesUtil.NFE ou ConstantesUtil.NFCE
+	 * Classe Reponsavel Por Inutilizar a NFE na SEFAZ No tipo Informar
+	 * ConstantesUtil.NFE ou ConstantesUtil.NFCE
 	 * 
 	 * @param inutNFe
 	 * @param valida
@@ -102,12 +105,13 @@ public class Nfe {
 	 * @return
 	 * @throws NfeException
 	 */
-	public static TRetInutNFe inutilizacao(TInutNFe inutNFe, boolean valida, String tipo) throws NfeException{
-		
-		return Inutilizar.inutiliza(inutNFe , valida, tipo);
-		
+	public static TRetInutNFe inutilizacao(TInutNFe inutNFe, boolean valida, String tipo, String cnpj)
+			throws NfeException {
+
+		return Inutilizar.inutiliza(inutNFe, valida, tipo, cnpj);
+
 	}
-	
+
 	/**
 	 * Classe Reponsavel Por Consultar a Distribuiçao da NFE na SEFAZ
 	 * 
@@ -116,12 +120,13 @@ public class Nfe {
 	 * @return
 	 * @throws NfeException
 	 */
-	public static RetDistDFeInt distribuicaoDfe(DistDFeInt distDFeInt, boolean valida) throws NfeException{
-		
-		return DistribuicaoDFe.consultaNfe(distDFeInt , valida);
-		
+	public static RetDistDFeInt distribuicaoDfe(DistDFeInt distDFeInt, boolean valida, String cnpj)
+			throws NfeException {
+
+		return DistribuicaoDFe.consultaNfe(distDFeInt, valida, cnpj);
+
 	}
-	
+
 	/**
 	 * Metodo para Montar a NFE.
 	 * 
@@ -130,30 +135,30 @@ public class Nfe {
 	 * @return
 	 * @throws NfeException
 	 */
-	public static TEnviNFe montaNfe(TEnviNFe enviNFe, boolean valida) throws NfeException{
-		
-		return Enviar.montaNfe(enviNFe , valida);
-				
+	public static TEnviNFe montaNfe(TEnviNFe enviNFe, boolean valida, String cnpj) throws NfeException {
+
+		return Enviar.montaNfe(enviNFe, valida, cnpj);
+
 	}
-	
+
 	/**
-	 * Metodo para Enviar a NFE.
-	 * No tipo Informar ConstantesUtil.NFE ou ConstantesUtil.NFCE
+	 * Metodo para Enviar a NFE. No tipo Informar ConstantesUtil.NFE ou
+	 * ConstantesUtil.NFCE
 	 * 
 	 * @param enviNFe
 	 * @param tipo
 	 * @return
 	 * @throws NfeException
 	 */
-	public static TRetEnviNFe enviarNfe(TEnviNFe enviNFe, String tipo) throws NfeException{
-		
-		return Enviar.enviaNfe(enviNFe, tipo);
-		
+	public static TRetEnviNFe enviarNfe(TEnviNFe enviNFe, String tipo, String cnpj) throws NfeException {
+
+		return Enviar.enviaNfe(enviNFe, tipo, cnpj);
+
 	}
-	
+
 	/**
-	 * 	 * Metodo para Cancelar a NFE.
-	 * No tipo Informar ConstantesUtil.NFE ou ConstantesUtil.NFCE
+	 * * Metodo para Cancelar a NFE. No tipo Informar ConstantesUtil.NFE ou
+	 * ConstantesUtil.NFCE
 	 * 
 	 * @param evento
 	 * @param valida
@@ -162,15 +167,16 @@ public class Nfe {
 	 * @throws NfeException
 	 */
 
-	public static TRetEnvEvento cancelarNfe(TEnvEvento evento, boolean valida, String tipo) throws NfeException{
-		
-		return Evento.eventoCancelamento(evento , valida, tipo);
-		
+	public static TRetEnvEvento cancelarNfe(TEnvEvento evento, boolean valida, String tipo, String cnpj)
+			throws NfeException {
+
+		return Evento.eventoCancelamento(evento, valida, tipo, cnpj);
+
 	}
-	
+
 	/**
-	 * 	 * Metodo para Envio da Carta De Correção da NFE.
-	 * No tipo Informar ConstantesUtil.NFE ou ConstantesUtil.NFCE
+	 * * Metodo para Envio da Carta De Correção da NFE. No tipo Informar
+	 * ConstantesUtil.NFE ou ConstantesUtil.NFCE
 	 * 
 	 * @param evento
 	 * @param valida
@@ -178,10 +184,12 @@ public class Nfe {
 	 * @return
 	 * @throws NfeException
 	 */
-	public static br.inf.portalfiscal.nfe.schema.envcce.TRetEnvEvento cce(br.inf.portalfiscal.nfe.schema.envcce.TEnvEvento evento, boolean valida, String tipo) throws NfeException{
-		
-		return Evento.eventoCce(evento , valida,tipo);
-		
+	public static br.inf.portalfiscal.nfe.schema.envcce.TRetEnvEvento cce(
+			br.inf.portalfiscal.nfe.schema.envcce.TEnvEvento evento, boolean valida, String tipo, String cnpj)
+			throws NfeException {
+
+		return Evento.eventoCce(evento, valida, tipo, cnpj);
+
 	}
 
 	/**
@@ -192,11 +200,12 @@ public class Nfe {
 	 * @return
 	 * @throws NfeException
 	 */
-	public static br.inf.portalfiscal.nfe.schema.retEnvConfRecebto.TRetEnvEvento manifestacao(br.inf.portalfiscal.nfe.schema.envConfRecebto.TEnvEvento envEvento, boolean valida) throws NfeException {
-		
-		return Evento.eventoManifestacao(envEvento , valida);
-		
+	public static br.inf.portalfiscal.nfe.schema.retEnvConfRecebto.TRetEnvEvento manifestacao(
+			br.inf.portalfiscal.nfe.schema.envConfRecebto.TEnvEvento envEvento, boolean valida, String cnpj)
+			throws NfeException {
+
+		return Evento.eventoManifestacao(envEvento, valida, cnpj);
+
 	}
-	
-	
+
 }
