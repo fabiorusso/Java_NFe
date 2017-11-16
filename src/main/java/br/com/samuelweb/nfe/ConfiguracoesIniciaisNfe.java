@@ -3,6 +3,7 @@
  */
 package br.com.samuelweb.nfe;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,12 +47,19 @@ public final class ConfiguracoesIniciaisNfe {
 		this.setCnpj(cnpj);
 	}
 
-	private void readFileConfiguration() {
+	private void readFileConfiguration() throws ConfiguracaoNfeException {
 		Properties prop = new Properties();
 		try {
 			prop.load(getClass().getResourceAsStream("/certificados.properties"));
 			String filename = prop.getProperty("file.path");
 			System.out.println("file: " + filename);
+
+			File configFile = new File(filename);
+			if (!configFile.exists()) {
+				throw new ArquivoConfiguracaoNaoEncontradoException("Filename: " + filename);
+			}
+			
+			
 
 		} catch (IOException e) {
 
@@ -83,6 +91,10 @@ public final class ConfiguracoesIniciaisNfe {
 	public static ConfiguracoesIniciaisNfe getInstance(String cnpj) throws NfeException {
 		if (instance == null) {
 			throw new NfeException("Configurações Não Foram Inicializadas.");
+		}
+		
+		if(instance.get(cnpj)==null) {
+			throw new NfeException("Esse CNPJ("+ cnpj +") não foi inicializado.");
 		}
 
 		return instance.get(cnpj);
