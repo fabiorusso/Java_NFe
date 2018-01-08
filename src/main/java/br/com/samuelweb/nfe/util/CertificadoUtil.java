@@ -19,14 +19,13 @@ public class CertificadoUtil {
 	private ConfiguracoesIniciaisNfe configuracoesNfe;
 
 	// Construtor
-	public CertificadoUtil() throws NfeException {
-		configuracoesNfe = ConfiguracoesIniciaisNfe.getInstance();
+	public CertificadoUtil(String cnpj) throws NfeException {
+		configuracoesNfe = ConfiguracoesIniciaisNfe.getInstance(cnpj);
 	}
 
 	public void iniciaConfiguracoes() throws NfeException {
 
 		try {
-
 			Certificado certificado = configuracoesNfe.getCertificado();
 			CertificadoService.inicializaCertificado(certificado, getClass().getResourceAsStream("/Cacert"));
 
@@ -35,7 +34,7 @@ public class CertificadoUtil {
 		}
 
 	}
-	
+
 	public static List<Certificado> listaCertificadosWindows() throws NfeException {
 		try {
 			return CertificadoService.listaCertificadosWindows();
@@ -51,7 +50,7 @@ public class CertificadoUtil {
 			throw new NfeException(e);
 		}
 	}
-	
+
 	public static Certificado certificadoPfx(String caminhoCertificado, String senha) throws NfeException {
 		try {
 			return CertificadoService.certificadoPfx(caminhoCertificado, senha);
@@ -59,7 +58,7 @@ public class CertificadoUtil {
 			throw new NfeException(e);
 		}
 	}
-	
+
 	public static Certificado certificadoA3(String marca, String dll, String senha) throws NfeException {
 		try {
 			return CertificadoService.certificadoA3(marca, dll, senha);
@@ -67,5 +66,5 @@ public class CertificadoUtil {
 			throw new NfeException(e);
 		}
 	}
-	
+
 }

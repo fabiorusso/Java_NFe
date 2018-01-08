@@ -43,7 +43,7 @@ public class Enviar {
 	 * @return
 	 * @throws NfeException
 	 */
-	public static TEnviNFe montaNfe(TEnviNFe enviNFe, boolean valida) throws NfeException {
+	public static TEnviNFe montaNfe(TEnviNFe enviNFe, boolean valida, String cnpj) throws NfeException {
 
 		try {
 
@@ -55,13 +55,13 @@ public class Enviar {
 			/**
 			 * Assina o Xml
 			 */
-			xml = Assinar.assinaNfe(xml, Assinar.NFE);
+			xml = Assinar.assinaNfe(xml, Assinar.NFE, cnpj);
 
 			/**
 			 * Valida o Xml caso sejá selecionado True
 			 */
 			if(valida){
-				String erros = Validar.validaXml(xml, Validar.ENVIO);
+				String erros = Validar.validaXml(xml, Validar.ENVIO, cnpj);
 				if (!ObjetoUtil.isEmpty(erros)) {
 					throw new NfeValidacaoException("Erro Na Validação do Xml: " + erros);
 				}
@@ -85,16 +85,16 @@ public class Enviar {
 	 * @return
 	 * @throws NfeException
 	 */
-	public static TRetEnviNFe enviaNfe(TEnviNFe enviNFe, String tipo) throws NfeException {
+	public static TRetEnviNFe enviaNfe(TEnviNFe enviNFe, String tipo, String cnpj) throws NfeException {
 
 		/**
 		 * Informacoes do Certificado Digital.
 		 */
-		certUtil = new CertificadoUtil();
+		certUtil = new CertificadoUtil(cnpj);
 		certUtil.iniciaConfiguracoes();
 		
 		boolean nfce = tipo.equals(ConstantesUtil.NFCE);
-		configuracoesNfe = ConfiguracoesIniciaisNfe.getInstance();
+		configuracoesNfe = ConfiguracoesIniciaisNfe.getInstance(cnpj);
 		String qrCode = "";
 
 		try {
@@ -164,7 +164,7 @@ public class Enviar {
 			NfeAutorizacaoStub.NfeCabecMsgE nfeCabecMsgE = new NfeAutorizacaoStub.NfeCabecMsgE();
 			nfeCabecMsgE.setNfeCabecMsg(nfeCabecMsg);
 
-			NfeAutorizacaoStub stub = new NfeAutorizacaoStub(nfce ? WebServiceUtil.getUrl(ConstantesUtil.NFCE, ConstantesUtil.SERVICOS.ENVIO) : WebServiceUtil.getUrl(ConstantesUtil.NFE, ConstantesUtil.SERVICOS.ENVIO));
+			NfeAutorizacaoStub stub = new NfeAutorizacaoStub(nfce ? WebServiceUtil.getUrl(ConstantesUtil.NFCE, ConstantesUtil.SERVICOS.ENVIO,cnpj) : WebServiceUtil.getUrl(ConstantesUtil.NFE, ConstantesUtil.SERVICOS.ENVIO, cnpj));
 			result = stub.nfeAutorizacaoLote(dadosMsg, nfeCabecMsgE);
 
 			return XmlUtil.xmlToObject(result.getExtraElement().toString(), TRetEnviNFe.class);

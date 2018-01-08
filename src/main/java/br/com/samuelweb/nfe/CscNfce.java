@@ -28,10 +28,10 @@ public class CscNfce {
 	private static ConfiguracoesIniciaisNfe configuracoesNfe;
 	private static CertificadoUtil certUtil;
 
-	public static String consultaCSC() throws NfeException {
+	public static String consultaCSC(String cnpj) throws NfeException {
 		
-		certUtil = new CertificadoUtil();
-		configuracoesNfe = ConfiguracoesIniciaisNfe.getInstance();
+		certUtil = new CertificadoUtil(cnpj);
+		configuracoesNfe = ConfiguracoesIniciaisNfe.getInstance(cnpj);
 
 		try {
 
@@ -69,7 +69,7 @@ public class CscNfce {
 			CscNFCeStub.NfeCabecMsgE nfeCabecMsgE = new CscNFCeStub.NfeCabecMsgE();
 			nfeCabecMsgE.setNfeCabecMsg(nfeCabecMsg);
 
-			CscNFCeStub stub = new CscNFCeStub( WebServiceUtil.getUrl(ConstantesUtil.NFCE, ConstantesUtil.SERVICOS.CSC));
+			CscNFCeStub stub = new CscNFCeStub( WebServiceUtil.getUrl(ConstantesUtil.NFCE, ConstantesUtil.SERVICOS.CSC, cnpj));
 			result = stub.admCscNFCe(dadosMsg, nfeCabecMsgE);
 		
 		} catch (RemoteException | XMLStreamException e) {

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Configuration>
+	<empresas>
+		<empresa estado="SP" ambiente="H" schema="C:\schemas\"
+			versaoNFe="3.10" cnpj="1234567890123">
+			<certificado>C:\certificados\teste.pfx</certificado>
+		</empresa>
+	</empresas>
+</Configuration>

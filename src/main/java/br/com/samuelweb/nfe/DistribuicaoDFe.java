@@ -19,13 +19,12 @@ import br.inf.portalfiscal.nfe.schema.distdfeint.DistDFeInt;
 import br.inf.portalfiscal.nfe.schema.retdistdfeint.RetDistDFeInt;
 import br.inf.portalfiscal.www.nfe.wsdl.NFeDistribuicaoDFe.NFeDistribuicaoDFeStub;
 
-
 /**
  * @author Samuel Oliveira - samuk.exe@hotmail.com - www.samuelweb.com.br
  *
  */
 public class DistribuicaoDFe {
-	
+
 	private static NFeDistribuicaoDFeStub.NfeDistDFeInteresseResponse result;
 	private static CertificadoUtil certUtil;
 
@@ -37,9 +36,9 @@ public class DistribuicaoDFe {
 	 * @return
 	 * @throws NfeException
 	 */
-	public static RetDistDFeInt consultaNfe(DistDFeInt distDFeInt, boolean valida) throws NfeException{
-		
-		certUtil = new CertificadoUtil();
+	public static RetDistDFeInt consultaNfe(DistDFeInt distDFeInt, boolean valida, String cnpj) throws NfeException {
+
+		certUtil = new CertificadoUtil(cnpj);
 
 		try {
 
@@ -47,37 +46,36 @@ public class DistribuicaoDFe {
 			 * Carrega Informaçoes do Certificado Digital.
 			 */
 			certUtil.iniciaConfiguracoes();
-
 			String xml = XmlUtil.objectToXml(distDFeInt);
-			
-			if(valida){
-				String erros = Validar.validaXml(xml, Validar.DIST_DFE);
-				
-				if(!ObjetoUtil.isEmpty(erros)){
-					throw new NfeValidacaoException("Erro Na Validação do Xml: "+erros);
+
+			if (valida) {
+				String erros = Validar.validaXml(xml, Validar.DIST_DFE,cnpj);
+
+				if (!ObjetoUtil.isEmpty(erros)) {
+					throw new NfeValidacaoException("Erro Na Validação do Xml: " + erros);
 				}
 			}
-			
-			System.out.println("Xml: "+xml);
-			
+
+			System.out.println("Xml: " + xml);
+
 			OMElement ome = AXIOMUtil.stringToOM(xml);
-			
-			NFeDistribuicaoDFeStub.NfeDadosMsg_type0 dadosMsgType0 = new NFeDistribuicaoDFeStub.NfeDadosMsg_type0();  
-			dadosMsgType0.setExtraElement(ome);  
-			  
-			NFeDistribuicaoDFeStub.NfeDistDFeInteresse distDFeInteresse = new NFeDistribuicaoDFeStub.NfeDistDFeInteresse();  
-			distDFeInteresse.setNfeDadosMsg(dadosMsgType0);  
-			  
-			NFeDistribuicaoDFeStub stub = new NFeDistribuicaoDFeStub( WebServiceUtil.getUrl(ConstantesUtil.NFE, ConstantesUtil.SERVICOS.DISTRIBUICAO_DFE));  
-			result = stub.nfeDistDFeInteresse(distDFeInteresse);  
 
-			return XmlUtil.xmlToObject(result.getNfeDistDFeInteresseResult().getExtraElement().toString(), RetDistDFeInt.class);  
+			NFeDistribuicaoDFeStub.NfeDadosMsg_type0 dadosMsgType0 = new NFeDistribuicaoDFeStub.NfeDadosMsg_type0();
+			dadosMsgType0.setExtraElement(ome);
 
+			NFeDistribuicaoDFeStub.NfeDistDFeInteresse distDFeInteresse = new NFeDistribuicaoDFeStub.NfeDistDFeInteresse();
+			distDFeInteresse.setNfeDadosMsg(dadosMsgType0);
+
+			NFeDistribuicaoDFeStub stub = new NFeDistribuicaoDFeStub(
+					WebServiceUtil.getUrl(ConstantesUtil.NFE, ConstantesUtil.SERVICOS.DISTRIBUICAO_DFE,cnpj));
+			result = stub.nfeDistDFeInteresse(distDFeInteresse);
+
+			return XmlUtil.xmlToObject(result.getNfeDistDFeInteresseResult().getExtraElement().toString(),
+					RetDistDFeInt.class);
 
 		} catch (RemoteException | XMLStreamException | JAXBException e) {
 			throw new NfeException(e.getMessage());
 		}
 	}
-
 
 }

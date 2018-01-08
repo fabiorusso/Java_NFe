@@ -42,12 +42,12 @@ public class ConsultaRecibo {
 	 * @throws NfeException
 	 */
 	
-	public static TRetConsReciNFe reciboNfe(TConsReciNFe tConsReciNFe, boolean valida, String tipo) throws NfeException {
+	public static TRetConsReciNFe reciboNfe(TConsReciNFe tConsReciNFe, boolean valida, String tipo, String cnpj) throws NfeException {
 
 		try {
 			
-			certUtil = new CertificadoUtil();
-			configuracoesNfe = ConfiguracoesIniciaisNfe.getInstance();
+			certUtil = new CertificadoUtil(cnpj);
+			configuracoesNfe = ConfiguracoesIniciaisNfe.getInstance(cnpj);
 			boolean nfce = tipo.equals(ConstantesUtil.NFCE);
 
 			/**
@@ -58,7 +58,7 @@ public class ConsultaRecibo {
 			String xml = XmlUtil.objectToXml(tConsReciNFe);
 		
 			if(valida){
-				String erros = Validar.validaXml(xml, Validar.CONSULTA_RECIBO);
+				String erros = Validar.validaXml(xml, Validar.CONSULTA_RECIBO,cnpj);
 				if(!ObjetoUtil.isEmpty(erros)){
 					throw new NfeValidacaoException("Erro Na Validação do Xml: "+erros);
 				}
@@ -82,7 +82,7 @@ public class ConsultaRecibo {
 			NfeRetAutorizacaoStub.NfeCabecMsgE nfeCabecMsgE = new NfeRetAutorizacaoStub.NfeCabecMsgE();
 			nfeCabecMsgE.setNfeCabecMsg(nfeCabecMsg);
 
-			NfeRetAutorizacaoStub stub = new NfeRetAutorizacaoStub(nfce ? WebServiceUtil.getUrl(ConstantesUtil.NFCE, ConstantesUtil.SERVICOS.CONSULTA_RECIBO) : WebServiceUtil.getUrl(ConstantesUtil.NFE, ConstantesUtil.SERVICOS.CONSULTA_RECIBO));
+			NfeRetAutorizacaoStub stub = new NfeRetAutorizacaoStub(nfce ? WebServiceUtil.getUrl(ConstantesUtil.NFCE, ConstantesUtil.SERVICOS.CONSULTA_RECIBO,cnpj) : WebServiceUtil.getUrl(ConstantesUtil.NFE, ConstantesUtil.SERVICOS.CONSULTA_RECIBO,cnpj));
 			result = stub.nfeRetAutorizacaoLote(dadosMsg, nfeCabecMsgE);
 
 			return XmlUtil.xmlToObject(result.getExtraElement().toString(), TRetConsReciNFe.class);
