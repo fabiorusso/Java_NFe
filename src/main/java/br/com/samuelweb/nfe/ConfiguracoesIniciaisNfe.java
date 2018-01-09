@@ -4,14 +4,23 @@
 package br.com.samuelweb.nfe;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+
 import br.com.samuelweb.certificado.Certificado;
+import br.com.samuelweb.nfe.configuration.ConfigurationXML;
+import br.com.samuelweb.nfe.configuration.EmpresaType;
 import br.com.samuelweb.nfe.exception.NfeException;
+import br.com.samuelweb.nfe.util.CertificadoUtil;
+import br.com.samuelweb.nfe.util.ConstantesUtil;
 import br.com.samuelweb.nfe.util.Estados;
+import br.com.samuelweb.nfe.util.FileUtil;
 import br.com.samuelweb.nfe.util.ProxyUtil;
 
 /**
@@ -22,6 +31,8 @@ import br.com.samuelweb.nfe.util.ProxyUtil;
 public final class ConfiguracoesIniciaisNfe {
 
 	private static Map<String, ConfiguracoesIniciaisNfe> instance = new HashMap<String, ConfiguracoesIniciaisNfe>();
+
+	private static ConfigurationXML configuration;
 
 	private Estados estado;
 	private String ambiente;
@@ -47,10 +58,10 @@ public final class ConfiguracoesIniciaisNfe {
 		this.setCnpj(cnpj);
 	}
 
-	private void readFileConfiguration() throws ConfiguracaoNfeException {
+	private static void readFileConfiguration() throws ConfiguracaoNfeException, NfeException {
 		Properties prop = new Properties();
 		try {
-			prop.load(getClass().getResourceAsStream("/certificados.properties"));
+			prop.load(ConfiguracoesIniciaisNfe.class.getResourceAsStream("/certificados.properties"));
 			String filename = prop.getProperty("file.path");
 			System.out.println("file: " + filename);
 
@@ -58,12 +69,34 @@ public final class ConfiguracoesIniciaisNfe {
 			if (!configFile.exists()) {
 				throw new ArquivoConfiguracaoNaoEncontradoException("Filename: " + filename);
 			}
-			
-			
+
+			JAXBContext context = JAXBContext.newInstance(ConfigurationXML.class);
+			configuration = (ConfigurationXML) context.createUnmarshaller().unmarshal(configFile);
+
+			for (EmpresaType emp : configuration.getEmpresas().getEmpresas()) {
+				Certificado certificado = CertificadoUtil.certificadoPfxBytes(
+						FileUtil.readBytesFromInputStream(new FileInputStream(new File((emp.getCertificado())))),
+						emp.getSenha());
+
+				ConfiguracoesIniciaisNfe.iniciaConfiguracoes(Estados.valueOf(emp.getEstado()),
+						emp.getAmbiente().equals("P") ? ConstantesUtil.AMBIENTE.PRODUCAO
+								: ConstantesUtil.AMBIENTE.HOMOLOGACAO,
+						certificado, emp.getPastaSchemas(), emp.getVersaoNfe(), emp.getCnpj());
+			}
 
 		} catch (IOException e) {
-
+			throw new ConfiguracaoNfeException(e);
+		} catch (JAXBException e) {
+			throw new ConfiguracaoNfeException(e);
 		}
+	}
+
+	public static void iniciaConfiguracoes() throws ConfiguracaoNfeException, NfeException {
+		readFileConfiguration();
+	}
+
+	public static final ConfigurationXML getConfiguration() {
+		return configuration;
 	}
 
 	private ConfiguracoesIniciaisNfe(Estados estado, String ambiente, String pastaSchemas, String versaoNfe,
@@ -88,13 +121,17 @@ public final class ConfiguracoesIniciaisNfe {
 		return instance.get(cnpj);
 	}
 
+	public static boolean containsCnpjDestinatario(String cnpj) {
+		return instance.containsKey(cnpj);
+	}
+
 	public static ConfiguracoesIniciaisNfe getInstance(String cnpj) throws NfeException {
 		if (instance == null) {
 			throw new NfeException("Configurações Não Foram Inicializadas.");
 		}
-		
-		if(instance.get(cnpj)==null) {
-			throw new NfeException("Esse CNPJ("+ cnpj +") não foi inicializado.");
+
+		if (instance.get(cnpj) == null) {
+			throw new NfeException("Esse CNPJ(" + cnpj + ") não foi inicializado.");
 		}
 
 		return instance.get(cnpj);
