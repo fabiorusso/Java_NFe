@@ -26,7 +26,8 @@ public class ConfigurationXMLTest {
 		empresa.setPastaSchemas("C:\\schemas\\");
 		empresa.setVersaoNfe("3.10");
 		empresa.setEstado("SP");
-		
+		empresa.setNomeEmpresa("Empresa Teste");
+		empresa.setSenha("teste");
 		xml.getEmpresas().getEmpresas().add(empresa);
 		
 		JAXBContext c = JAXBContext.newInstance(ConfigurationXML.class);
